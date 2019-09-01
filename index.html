@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+    <title>floor plan</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.5.1/tabletop.min.js'></script>
+
+     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+   integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+   crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+   integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+   crossorigin=""></script>
+
+
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
+	
+ 	<script src="script/leaflet-heat.js"></script>
+	<link rel="stylesheet" href="script/Leaflet.Dialog.css"/>
+    <script src="script/Leaflet.Dialog.js"></script>
+    <script src="script/xls-export.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+    
+    <script type="text/javascript" src="points.json"></script>
+</head>
+<body>
+    <!-- <button id='download'>Download selected</button> -->
+    <div id="map" style="width: 100vw; height: 100vh; z-index: 0;"></div>
+    <script>
+        var map = L.map('map', {
+            crs: L.CRS.Simple
+        });
+        var pointLayer = new L.FeatureGroup(); 
+
+
+
+        var heat;
+        var coordArray = [];
+        var bounds = [[0,0], [569, 842]];
+        var image = L.imageOverlay('floorplan.jpg', bounds).addTo(map);
+
+        map.fitBounds(bounds);
+        map.setZoom(0.4);
+
+        
+
+
+       /*  var drawControl = new L.Control.Draw({
+         draw: {
+             polygon: false,
+             marker: true
+         }
+        }).addTo(map); */
+
+        var svg = '<svg xmlns="http://www.w3.org/2000/svg" height="100" width="100"><circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="brown" /></svg>';
+
+        var iconUrl = 'data:image/svg+xml;base64,' + btoa(svg);
+
+        var icon = L.icon({
+            iconUrl: iconUrl,
+            iconSize: [10, 10],
+            iconAnchor: [5, 5]
+        });
+
+        for(var row = 0; row < data.length; row++) {
+			
+            var marker = new L.marker([data[row].x, data[row].y]).addTo(map);
+            marker.setIcon(icon);
+            coordArray.push([data[row].x, data[row].y]);
+            heat = L.heatLayer(coordArray, {minOpacity: 0.6}).addTo(map);
+        
+        }
+        /* map.on('draw:created', function (e){
+            var x = (e.layer._latlng.lat);
+            var y = (e.layer._latlng.lng);
+            coordArray.push([x, y]);
+            heat = L.heatLayer(coordArray, {minOpacity: 0.4}).addTo(map);
+            console.log(coordArray);
+            var marker = e.layer;
+            marker.setIcon(icon);
+            pointLayer.addLayer(marker);
+            map.addLayer(pointLayer);
+            //console.log(pointLayer);
+        }); */
+
+        document.getElementById("download").addEventListener("click", downloadExcel);
+        function downloadExcel(){
+            var xls = new xlsExport(coordArray, 'title');
+                xls.exportToXLS('export.xls')
+        };
+        
+    </script>
+</body>
+</html>
