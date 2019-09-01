@@ -51,12 +51,16 @@
         
 
 
-       /*  var drawControl = new L.Control.Draw({
+        var drawControl = new L.Control.Draw({
          draw: {
              polygon: false,
+             circle: false,
+             polyline: false,
+             circlemarker: false,
+             rectangle: false,
              marker: true
          }
-        }).addTo(map); */
+        }).addTo(map); 
 
         var svg = '<svg xmlns="http://www.w3.org/2000/svg" height="100" width="100"><circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="brown" /></svg>';
 
@@ -68,15 +72,16 @@
             iconAnchor: [5, 5]
         });
 
-        for(var row = 0; row < data.length; row++) {
+        /* for(var row = 0; row < data.length; row++) {
 			
             var marker = new L.marker([data[row].x, data[row].y]).addTo(map);
             marker.setIcon(icon);
             coordArray.push([data[row].x, data[row].y]);
             heat = L.heatLayer(coordArray, {minOpacity: 0.6}).addTo(map);
         
-        }
-        /* map.on('draw:created', function (e){
+        } */
+        var dialog;
+         map.on('draw:created', function (e){
             var x = (e.layer._latlng.lat);
             var y = (e.layer._latlng.lng);
             coordArray.push([x, y]);
@@ -86,15 +91,22 @@
             marker.setIcon(icon);
             pointLayer.addLayer(marker);
             map.addLayer(pointLayer);
+            dialog = L.control.dialog()
+              .setContent('Unit name: <input type="text" name="fname"><br> Other data: <input type="text" name="lname"><br><button id="save">Save</button>')
+              .addTo(map);
+              document.getElementById("save").addEventListener("click", saveData);
             //console.log(pointLayer);
-        }); */
+        }); 
 
-        document.getElementById("download").addEventListener("click", downloadExcel);
+        /* document.getElementById("download").addEventListener("click", downloadExcel);
         function downloadExcel(){
             var xls = new xlsExport(coordArray, 'title');
                 xls.exportToXLS('export.xls')
-        };
+        }; */
         
+        function saveData(){
+            dialog.close();
+        }
     </script>
 </body>
 </html>
